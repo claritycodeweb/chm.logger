@@ -59,7 +59,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Logging\JobLoggerTest.cs" />
-    <Compile Include="Mock\MockJobLoggerConfig.cs" />
+    <Compile Include="Logging\Mock\MockJobLoggerConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -12,8 +12,8 @@ namespace Chm.Test.Logging.Mock
         public bool IsLogToFile => true;
         public bool IsLogToDataBase => true;
         public bool IsLogToConsole => true;
-        public string DbConnectionString => "Data Source=(LocalDb);Initial Catalog=MyAppDB;Integrated Security=True";
-        public string FilePath => @"C:\work\test\";
+        public string DbConnectionString => "Server=(localdb)\\mssqllocaldb;Database=Test;Trusted_Connection=True;";
+        public string FilePath => @"C:\work\";
         public int LogSeverity => 0;
     }
 }

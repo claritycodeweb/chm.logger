@@ -13,7 +13,7 @@ namespace Chm.Logging
         Err
     }
 
-    public interface IJobLogger : IDisposable
+    public interface IJobLogger
     {
         void LogInfo(string message);
         void LogWarn(string message);

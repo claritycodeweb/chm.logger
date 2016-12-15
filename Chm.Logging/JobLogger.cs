@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data.SqlClient;
+using System.Diagnostics;
 
 namespace Chm.Logging
 {
@@ -37,7 +38,14 @@ namespace Chm.Logging
 
         private void Log(string message, LogLevel level)
         {
-            if ((int) level < _config.LogSeverity)
+
+            if (string.IsNullOrEmpty(message))
+            {
+                return;
+            }
+
+
+            if ((int)level < _config.LogSeverity)
             {
                 return;
             }
@@ -58,15 +66,11 @@ namespace Chm.Logging
             {
                 this.WriteToDb(message, level);
             }
+
         }
 
         private string PrepareMessage(string message, LogLevel level)
         {
-            if (string.IsNullOrEmpty(message))
-            {
-                throw new ArgumentNullException(nameof(message));
-            }
-
             message = $"{DateTime.Now} {message.Trim()}";
 
             switch (level)
@@ -87,19 +91,33 @@ namespace Chm.Logging
 
         private void WriteToDb(string message, LogLevel level)
         {
+            string sql = "Insert into Log Values('" + message + "', " + (int)level + ")";
             try
             {
-                using (SqlConnection connection = new SqlConnection(_config.DbConnectionString))
+                using (SqlConnection connection = new SqlConnection(_config.DbConnectionString)) // compiles to try finally block
                 {
                     connection.Open();
-                    SqlCommand command = new SqlCommand("Insert into Log Values('" + message + "', " + (int)level + ")");
-                    command.ExecuteNonQuery();
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        command.ExecuteNonQuery();
+                    }
                     connection.Close();
                 }
             }
-            catch (Exception x)
+            catch (InvalidOperationException ex)
             {
-                throw new ApplicationException("Error during writing log to database", x);
+                //or log to EventLog
+                Console.WriteLine($"Error during writing log to database:{ex.Message}{ex.StackTrace}");
+            }
+            catch (SqlException ex)
+            {
+                //or log to EventLog
+                Console.WriteLine($"Error during writing log to database:{ex.Message}{ex.StackTrace}");
+            }
+            catch (Exception ex)
+            {
+                //or log to EventLog
+                Console.WriteLine($"Error during writing log to database:{ex.Message}{ex.StackTrace}");
             }
         }
 
@@ -117,9 +135,15 @@ namespace Chm.Logging
                     }
                 }
             }
-            catch (Exception x)
+            catch (IOException ex)
             {
-                throw new ApplicationException("Error during writing log to file", x);
+                //or log to EventLog
+                Console.WriteLine($"Error during writing log to file:{ex.Message}{ex.StackTrace}");
+            }
+            catch (Exception ex)
+            {
+                //or log to EventLog
+                Console.WriteLine($"Error during writing log to database:{ex.Message}{ex.StackTrace}");
             }
         }
 
@@ -141,15 +165,11 @@ namespace Chm.Logging
                 }
                 Console.WriteLine(message);
             }
-            catch (Exception x)
+            catch (Exception ex)
             {
-                throw new ApplicationException("Error during writing log to console", x);
+                //or log to EventLog
+                Console.WriteLine($"Error during writing log to database:{ex.Message}{ex.StackTrace}");
             }
-        }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
         }
     }
 }

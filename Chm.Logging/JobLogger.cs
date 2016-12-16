@@ -38,12 +38,10 @@ namespace Chm.Logging
 
         private void Log(string message, LogLevel level)
         {
-
             if (string.IsNullOrEmpty(message))
             {
                 return;
             }
-
 
             if ((int)level < _config.LogSeverity)
             {
@@ -66,7 +64,6 @@ namespace Chm.Logging
             {
                 this.WriteToDb(message, level);
             }
-
         }
 
         private string PrepareMessage(string message, LogLevel level)
@@ -79,7 +76,7 @@ namespace Chm.Logging
                     message = $"[WARN] {message}";
                     break;
                 case LogLevel.Err:
-                    message = $"[ERRO] {message}";
+                    message = $"[ERROR] {message}";
                     break;
                 default:
                     message = $"[INFO] {message}";
